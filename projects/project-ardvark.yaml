@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ardvark
+  namespace: argocd
+  # Finalizer that ensures that project is not deleted until it is not referenced by any application
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  description: Ardvark project
+  destinations:
+  - namespace: '*'
+    server: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  sourceRepos:
+  - '*'
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  creationTimestamp: null
+  name: ardvark-apps
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      files:
+      - path: workloads/ardvark/**/values.yaml
+      repoURL: https://github.com/imjoshholloway/gitops-playground.git
+      requeueAfterSeconds: 20
+      revision: ""
+      template:
+        metadata: {}
+        spec:
+          destination: {}
+          project: ""
+          source:
+            repoURL: ""
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: '{{ path[1] }}'
+      name: '{{ path[1] }}'
+      namespace: argocd
+    spec:
+      project: ardvark
+      destination:
+        namespace: '{{ path[1] }}'
+        server: 'https://kubernetes.default.svc'
+      source:
+        repoURL: https://github.com/imjoshholloway/gitops-playground.git
+        path: '{{ path }}'
+        targetRevision: 'main'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
