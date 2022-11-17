@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: ardvark
+  name: domino
   namespace: argocd
   # Finalizer that ensures that project is not deleted until it is not referenced by any application
   finalizers:
@@ -10,9 +10,15 @@ spec:
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
-  description: Ardvark project
+  description: Domino project
   destinations:
-  - namespace: '*'
+    # explicitly deny deployments to kube-system & argocd namespaces
+  - namespace: '!kube-system'
+    server: '*'
+  - namespace: 'arcocd'
+    server: '*'
+    # scope project to domino-* namespaces
+  - namespace: 'domino-*'
     server: '*'
   namespaceResourceWhitelist:
   - group: '*'
@@ -24,13 +30,13 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   creationTimestamp: null
-  name: ardvark-apps
+  name: domino-apps
   namespace: argocd
 spec:
   generators:
   - git:
       files:
-      - path: workloads/ardvark/**/values.yaml
+      - path: workloads/domino/**/values.yaml
       repoURL: https://github.com/imjoshholloway/gitops-playground.git
       requeueAfterSeconds: 20
       revision: ""
@@ -41,7 +47,7 @@ spec:
       name: '{{ path[1] }}'
       namespace: argocd
     spec:
-      project: ardvark
+      project: domino
       destination:
         namespace: '{{ path[1] }}'
         server: 'https://kubernetes.default.svc'
@@ -51,8 +57,6 @@ spec:
         targetRevision: 'main'
         plugin:
           name: argocd-lovely-plugin
-      plugin:
-        name: argocd-lovely-plugin
       syncPolicy:
         automated:
           prune: true
