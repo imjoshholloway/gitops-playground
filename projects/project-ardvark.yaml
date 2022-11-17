@@ -24,7 +24,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   creationTimestamp: null
-  name: ardvark-apps
+  name: project-ardvark
   namespace: argocd
 spec:
   generators:
