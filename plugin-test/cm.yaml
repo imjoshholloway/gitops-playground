@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: plugin-test
+  namespace: default
+data:
+  values.yaml: |
+    hello-world:
+      replicaCount: 5

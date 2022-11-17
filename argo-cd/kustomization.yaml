@@ -6,3 +6,4 @@ resources:
 
 components:
 - ./components/argocd-lovely-plugin
+- ./components/helm-external-val
