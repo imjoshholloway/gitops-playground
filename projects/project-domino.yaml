@@ -36,7 +36,7 @@ spec:
   generators:
   - git:
       files:
-      - path: workloads/domino/**/values.yaml
+      - path: workloads/domino/**/*.yaml
       repoURL: https://github.com/imjoshholloway/gitops-playground.git
       requeueAfterSeconds: 20
       revision: ""
