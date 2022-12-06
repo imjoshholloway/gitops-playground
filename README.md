@@ -4,7 +4,8 @@ Setup k8s clusters using argo-cd.
 
 ## bootstrap argo install
 ```
-kubectl apply -k argo-cd/
+kubectl apply -k control-plane/addons/argo-cd/
+kubectl apply -k control-plane/base
 ```
 
 ## get initial admin secret

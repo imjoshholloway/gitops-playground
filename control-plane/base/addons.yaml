@@ -1,0 +1,30 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: addons
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/imjoshholloway/gitops-playground
+        revision: HEAD
+        directories:
+          - path: control-plane/addons/**
+  template:
+    metadata:
+      name: 'control-plane-addons-{{ path.basename }}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/imjoshholloway/gitops-playground
+        targetRevision: HEAD
+        path: '{{ path }}'
+      destination:
+        server: https://kubernetes.default.svc
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true

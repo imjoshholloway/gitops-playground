@@ -2,14 +2,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argo-cd
+  name: clusters
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/imjoshholloway/gitops-playground
     targetRevision: main
-    path: ./argo-cd
+    path: ./clusters
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
