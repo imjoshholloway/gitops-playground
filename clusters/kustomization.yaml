@@ -1,0 +1,27 @@
+---
+secretGenerator:
+- name: uw2-dev-00
+  type: Opaque
+  options:
+    labels:
+      argocd.argoproj.io/secret-type: cluster
+      env: dev
+      region: uw2
+      cluster-id: '00'
+  literals:
+  - config='{"tlsClientConfig":{"insecure":false}}'
+  - name=uw2-dev-00
+  - server=https://kubernetes.default.svc
+
+- name: uw2-prd-00
+  type: Opaque
+  options:
+    labels:
+      argocd.argoproj.io/secret-type: cluster
+      env: prd
+      region: uw2
+      cluster-id: '00'
+  literals:
+  - config='{"tlsClientConfig":{"insecure":false}}'
+  - name=uw2-prd-00
+  - server=https://kubernetes.default.svc
