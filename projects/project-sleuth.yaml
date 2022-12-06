@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: ardvark
+  name: sleuth
   namespace: argocd
   # Finalizer that ensures that project is not deleted until it is not referenced by any application
   finalizers:
@@ -10,9 +10,9 @@ spec:
   clusterResourceWhitelist:
   - group: '*'
     kind: '*'
-  description: Ardvark project
+  description: Sleuth project
   destinations:
-  - namespace: 'ardvark-'
+  - namespace: 'sleuth-*'
     server: '*'
   namespaceResourceWhitelist:
   - group: '*'
@@ -24,41 +24,36 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   creationTimestamp: null
-  name: project-ardvark
+  name: project-sleuth
   namespace: argocd
 spec:
   generators:
-  - merge:
+  - matrix:
       generators:
+        - git:
+            directories:
+            - path: workloads/ardvark/**/envs/**
+            repoURL: https://github.com/imjoshholloway/gitops-playground.git
+            revision: multi-cluster
         - clusters:
             selector:
               matchLabels:
                 argocd.argoproj.io/secret-type: cluster
-        - git:
-            files:
-            - path: workloads/ardvark/**
-            repoURL: https://github.com/imjoshholloway/gitops-playground.git
-            requeueAfterSeconds: 20
-            revision: ""
+                env: '{{ path.basename }}'
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: '{{ path[1] }}'
-      name: '{{ path[1] }}-{{metadata.labels.env}}'
+      name: 'sleuth-{{ path[2] }}-{{metadata.labels.env}}'
       namespace: argocd
     spec:
-      project: ardvark
+      project: sleuth
       destination:
-        namespace: 'ardvark-{{ path[1] }}'
+        namespace: 'sleuth-{{ path[2] }}'
         server: '{{ server }}'
       source:
         repoURL: https://github.com/imjoshholloway/gitops-playground.git
-        path: '{{ path }}/envs/{{ metadata.labels.env }}'
-        targetRevision: 'main'
-        plugin:
-          name: argocd-lovely-plugin
-      plugin:
-        name: argocd-lovely-plugin
+        path: '{{ path }}'
+        targetRevision: 'multi-cluster'
       syncPolicy:
         automated:
           prune: true

@@ -24,4 +24,4 @@ secretGenerator:
   literals:
   - config='{"tlsClientConfig":{"insecure":false}}'
   - name=uw2-prd-00
-  - server=https://kubernetes.default.svc
+  - server=https://prd.kubernetes.cluster
